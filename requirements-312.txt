@@ -1,0 +1,13 @@
+flask
+flask_sqlalchemy
+pandas==2.2.2
+numpy
+scikit-learn
+lightgbm
+statsmodels
+yfinance
+matplotlib
+seaborn
+requests
+sweetviz
+ydata-profiling==4.9.0

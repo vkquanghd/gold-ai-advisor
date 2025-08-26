@@ -1,0 +1,102 @@
+/* Reset cơ bản */
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: #fafafa;
+  color: #333;
+}
+
+/* Top navigation */
+.topnav {
+  background: #2c3e50;
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.topnav a {
+  color: white;
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+}
+
+.topnav a:hover {
+  background: #34495e;
+}
+
+.topnav a.active {
+  background: #1abc9c;
+}
+
+.topnav a.warn {
+  background: #e74c3c;
+  font-weight: bold;
+}
+
+.topnav .range {
+  margin-left: auto;
+  font-size: 0.9em;
+  opacity: 0.9;
+}
+
+/* Container */
+.container {
+  padding: 20px;
+}
+
+/* Filters */
+form.filters {
+  margin-bottom: 15px;
+}
+
+form.filters input,
+form.filters select {
+  margin-right: 8px;
+  padding: 6px 10px;
+  font-size: 14px;
+}
+
+/* Table */
+table.tbl {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  margin-bottom: 20px;
+}
+
+table.tbl th,
+table.tbl td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+  font-size: 14px;
+}
+
+table.tbl th {
+  background: #f4f6f8;
+}
+
+/* Pager */
+.pager {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.pager a {
+  text-decoration: none;
+  color: #1565c0;
+}
+
+.pager a:hover {
+  text-decoration: underline;
+}
+
+.controls { display:flex; flex-wrap:wrap; gap:12px; margin:10px 0 16px; }
+.ctrl { min-width:220px; }
+.plots { display:flex; flex-direction:column; gap:22px; }

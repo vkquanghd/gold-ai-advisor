@@ -1,0 +1,10 @@
+{
+  "started_at": "2025-08-25T02:34:38.982651",
+  "steps": [
+    {
+      "name": "create_schema",
+      "rc": 1,
+      "log": "/Users/mac/Desktop/gold-ai-advisor-min/.venv/bin/python: Error while finding module specification for 'scripts.create_schema' (ModuleNotFoundError: No module named 'scripts')"
+    }
+  ]
+}

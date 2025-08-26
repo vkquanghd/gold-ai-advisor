@@ -1,0 +1,87 @@
+{# backend/templates/admin_table.html #}
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+
+<form class="filters" method="get">
+  <input type="text"
+         name="search"
+         placeholder="Search..."
+         value="{{ search or request.args.get('search', '') }}"/>
+
+  {# Brand filter only for VN page #}
+  {% if nav == 'vn' %}
+    <select name="brand" onchange="this.form.submit()">
+      <option value="" {{ 'selected' if not selected_brand else '' }}>All brands</option>
+      {% for b in brands %}
+        <option value="{{ b }}" {{ 'selected' if b == selected_brand else '' }}>{{ b }}</option>
+      {% endfor %}
+    </select>
+  {% endif %}
+
+  <input type="date" name="date_from" value="{{ date_from or '' }}"/>
+  <input type="date" name="date_to"   value="{{ date_to or '' }}"/>
+
+  {# Sorting controls: use headers (key,label) for dropdown #}
+  <select name="sort" onchange="this.form.submit()">
+    {% for key, label in headers %}
+      <option value="{{ key }}" {{ 'selected' if sort == key else '' }}>{{ label }}</option>
+    {% endfor %}
+  </select>
+
+  <select name="order" onchange="this.form.submit()">
+    <option value="desc" {{ 'selected' if (order or '').lower() == 'desc' else '' }}>desc</option>
+    <option value="asc"  {{ 'selected' if (order or '').lower() == 'asc'  else '' }}>asc</option>
+  </select>
+
+  <button type="submit">Apply</button>
+</form>
+
+{# Optional helper text under filters #}
+{% if help_text %}
+  <p class="meta">{{ help_text }}</p>
+{% endif %}
+
+<table class="tbl">
+  <thead>
+    <tr>
+      {% for key, label in columns %}
+        <th>{{ label }}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% if rows and rows|length %}
+      {% for r in rows %}
+        <tr>
+          {% for key, label in columns %}
+            <td>{{ r.get(key, '') }}</td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    {% else %}
+      <tr>
+        <td colspan="{{ columns|length }}">No data</td>
+      </tr>
+    {% endif %}
+  </tbody>
+</table>
+
+{# Pager #}
+{% set prev = page - 1 %}
+{% set next = page + 1 %}
+<div class="pager">
+  {% if page > 1 %}
+    <a href="{{ request.path }}?page=1&sort={{ sort }}&order={{ order }}&brand={{ selected_brand|default('') }}&search={{ search|default('') }}&date_from={{ date_from|default('') }}&date_to={{ date_to|default('') }}">« First</a>
+    <a href="{{ request.path }}?page={{ prev }}&sort={{ sort }}&order={{ order }}&brand={{ selected_brand|default('') }}&search={{ search|default('') }}&date_from={{ date_from|default('') }}&date_to={{ date_to|default('') }}">‹ Prev</a>
+  {% endif %}
+
+  <span>Page {{ page }} / {{ total_pages }} ({{ page_size }} rows/page; total {{ total_rows }} rows)</span>
+
+  {% if page < total_pages %}
+    <a href="{{ request.path }}?page={{ next }}&sort={{ sort }}&order={{ order }}&brand={{ selected_brand|default('') }}&search={{ search|default('') }}&date_from={{ date_from|default('') }}&date_to={{ date_to|default('') }}">Next ›</a>
+    <a href="{{ request.path }}?page={{ total_pages }}&sort={{ sort }}&order={{ order }}&brand={{ selected_brand|default('') }}&search={{ search|default('') }}&date_from={{ date_from|default('') }}&date_to={{ date_to|default('') }}">Last »</a>
+  {% endif %}
+</div>
+{% endblock %}

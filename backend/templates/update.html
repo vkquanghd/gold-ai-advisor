@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block extra_head %}
+<style>
+  /* minimal spinner (kept here so it works even if CSS cache lags) */
+  .spinner {
+    display: inline-block; width: 16px; height: 16px;
+    border: 2px solid #e0e0e0; border-top-color: #1abc9c;
+    border-radius: 50%; animation: spin 0.9s linear infinite; margin-left: 8px;
+    vertical-align: text-bottom;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .status {
+    padding: 10px; border: 1px solid #ddd; background: #fff; border-radius: 6px;
+    margin-bottom: 14px;
+  }
+  .muted { color:#666; font-size: .92em; }
+  .btn {
+    appearance: none;
+    padding: 8px 14px; border-radius: 6px; border: 1px solid #1abc9c;
+    background: #1abc9c; color: #fff; cursor: pointer; font-weight: 600;
+  }
+  .btn[disabled] { opacity: .6; cursor: not-allowed; }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>{{ title or "Daily Update" }}</h1>
+
+<div class="status">
+  <div><strong>Current coverage (vn_gold)</strong></div>
+  <div class="muted">
+    From <b>{{ range_info.min_date or '—' }}</b> to <b>{{ range_info.max_date or '—' }}</b>,
+    total <b>{{ range_info.total_rows or 0 }}</b> rows.
+  </div>
+</div>
+
+<div id="update-panel" class="status">
+  <div id="update-msg" class="muted">Click the button below to run daily update. Old rows beyond retention will be archived and pruned.</div>
+</div>
+
+<form id="update-form" onsubmit="return false;">
+  <button id="btn-run" class="btn" type="button" onclick="runDailyUpdate()">Run Daily Update</button>
+</form>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+  async function runDailyUpdate() {
+    const btn = document.getElementById('btn-run');
+    const msg = document.getElementById('update-msg');
+    const panel = document.getElementById('update-panel');
+
+    // Confirm before starting
+    if (!confirm("You are about to run the daily update.\nOld data beyond the retention window may be archived and deleted.\nProceed?")) {
+      return;
+    }
+
+    // UI: busy
+    btn.disabled = true;
+    msg.innerHTML = 'Running daily update… <span class="spinner" aria-hidden="true"></span>';
+
+    try {
+      const resp = await fetch("{{ url_for('admin.update_run') }}", {
+        method: "POST",
+        headers: { "X-Requested-With": "fetch", "Content-Type": "application/json" },
+        body: JSON.stringify({ manual: true })
+      });
+
+      if (!resp.ok) {
+        throw new Error("Server responded " + resp.status);
+      }
+
+      const data = await resp.json().catch(() => ({}));
+
+      // Success UI
+      let detail = '';
+      if (data && data.range_after) {
+        detail = `Coverage now: <b>${data.range_after.min_date}</b> → <b>${data.range_after.max_date}</b> (${data.range_after.total_rows} rows).`;
+      }
+      msg.innerHTML = `✅ Daily update completed. ${detail}`;
+      // Optionally refresh after a short delay
+      setTimeout(() => window.location.reload(), 1200);
+
+    } catch (err) {
+      console.error(err);
+      msg.innerHTML = '❌ Update failed. Please check server logs.';
+    } finally {
+      btn.disabled = false;
+    }
+  }
+</script>
+{% endblock %}

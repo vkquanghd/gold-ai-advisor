@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>{{ title or "Gold Admin" }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <nav class="topnav">
+    <div class="brand"><a href="{{ url_for('admin.index') }}" class="brand-link">Gold Admin</a></div>
+
+    <a href="{{ url_for('admin.admin_vn') }}"
+       class="{% if nav=='vn' %}active{% endif %}">VN</a>
+
+    <a href="{{ url_for('admin.admin_world') }}"
+       class="{% if nav=='world' %}active{% endif %}">World</a>
+
+    <a href="{{ url_for('admin.admin_fx') }}"
+       class="{% if nav=='fx' %}active{% endif %}">USD/VND</a>
+
+    <a href="{{ url_for('admin.update_page') }}"
+       class="{% if nav=='update' %}active{% endif %} warn">Daily Update</a>
+
+    <a href="/dash/" target="_blank" rel="noopener">Dash EDA ↗</a>
+
+    {% if data_range %}
+      <div class="range">
+        {{ data_range.table }}:
+        {{ data_range.min_date }} → {{ data_range.max_date }}
+        ({{ data_range.total_rows }} rows)
+      </div>
+    {% endif %}
+  </nav>
+
+  <div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div id="flashes">
+          {% for category, msg in messages %}
+            <div class="flash flash-{{ category|e }}">{{ msg|safe }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </div>
+
+  {% block scripts %}
+  <script>
+    setTimeout(() => {
+      const flashes = document.getElementById('flashes');
+      if (flashes) flashes.remove();
+    }, 4000);
+  </script>
+  {% endblock %}
+</body>
+</html>
